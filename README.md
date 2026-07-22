@@ -15,11 +15,14 @@ containerized with a minimal multi-stage Docker build, and deployed to a local
 
 ```
 .
-├── Program.cs             # Minimal API with /hello and /health
-├── HelloApi.csproj        # .NET 8 project file
-├── Dockerfile             # Multi-stage build, minimal chiseled runtime image
-├── .dockerignore
-└── k8s-deployment.yaml    # Deployment + Service for Kubernetes
+├── src/HelloApi/
+│   ├── Program.cs           # Minimal API with /hello and /health
+│   ├── HelloApi.csproj      # .NET 8 project file
+│   ├── Dockerfile           # Multi-stage build, minimal chiseled runtime image
+│   ├── .dockerignore
+│   └── ...                  # appsettings, launchSettings, HelloApi.http
+└── k8s/
+    └── deployment.yaml      # Deployment + Service for Kubernetes
 ```
 
 ## Running locally
@@ -27,6 +30,7 @@ containerized with a minimal multi-stage Docker build, and deployed to a local
 Requires the .NET 8 SDK.
 
 ```bash
+cd src/HelloApi
 dotnet run
 curl http://localhost:<port>/hello
 curl http://localhost:<port>/health
@@ -42,6 +46,7 @@ The `Dockerfile` uses a multi-stage build:
    built-in non-root `app` user by default. Final image size: **~121 MB**.
 
 ```bash
+cd src/HelloApi
 docker build -t sumeshsquare/helloapi:latest .
 docker run -d -p 8080:8080 sumeshsquare/helloapi:latest
 curl http://localhost:8080/hello
@@ -62,7 +67,7 @@ docker push sumeshsquare/helloapi:latest
 
 ## Kubernetes deployment
 
-`k8s-deployment.yaml` defines:
+`k8s/deployment.yaml` defines:
 
 - A `Deployment` (3 replicas) running `docker.io/sumeshsquare/helloapi:latest`,
   with readiness/liveness probes against `/health`.
@@ -71,14 +76,14 @@ docker push sumeshsquare/helloapi:latest
 Apply directly with kubectl:
 
 ```bash
-kubectl apply -f k8s-deployment.yaml
+kubectl apply -f k8s/deployment.yaml
 kubectl get pods -l app=helloapi
 ```
 
 ## GitOps with ArgoCD
 
 This repo is tracked by an ArgoCD `Application` (`helloapi`) with automated
-sync, self-heal, and pruning enabled. Any change pushed to `k8s-deployment.yaml`
+sync, self-heal, and pruning enabled. Any change pushed to `k8s/deployment.yaml`
 on `main` is automatically applied to the cluster — no manual `kubectl apply`
 needed.
 
@@ -95,9 +100,9 @@ spec:
   source:
     repoURL: https://github.com/sumesh-base/dotnetactions.git
     targetRevision: main
-    path: .
+    path: k8s
     directory:
-      include: "k8s-deployment.yaml"
+      include: "deployment.yaml"
   destination:
     server: https://kubernetes.default.svc
     namespace: default
