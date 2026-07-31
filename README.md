@@ -2,7 +2,7 @@
 
 A minimal ASP.NET Core (.NET 8) Web API with a `hello` endpoint and a health check,
 containerized with a minimal multi-stage Docker build, and deployed to a local
-`kind` Kubernetes cluster via ArgoCD (GitOps).
+`kind` Kubernetes cluster via ArgoCD (GitOps)
 
 ## Endpoints
 
