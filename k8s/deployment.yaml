@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: helloapi
-          image: docker.io/sumeshsquare/helloapi:latest
+          image: ghcr.io/sumesh-base/helloapi:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

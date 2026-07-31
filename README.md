@@ -47,29 +47,30 @@ The `Dockerfile` uses a multi-stage build:
 
 ```bash
 cd src/HelloApi
-docker build -t sumeshsquare/helloapi:latest .
-docker run -d -p 8080:8080 sumeshsquare/helloapi:latest
+docker build -t ghcr.io/sumesh-base/helloapi:latest .
+docker run -d -p 8080:8080 ghcr.io/sumesh-base/helloapi:latest
 curl http://localhost:8080/hello
 curl http://localhost:8080/health
 ```
 
 ## Image registry
 
-The image is published to Docker Hub:
+The image is published to GitHub Container Registry (GHCR):
 
 ```
-docker.io/sumeshsquare/helloapi:latest
+ghcr.io/sumesh-base/helloapi:latest
 ```
 
 ```bash
-docker push sumeshsquare/helloapi:latest
+docker login ghcr.io
+docker push ghcr.io/sumesh-base/helloapi:latest
 ```
 
 ## Kubernetes deployment
 
 `k8s/deployment.yaml` defines:
 
-- A `Deployment` (3 replicas) running `docker.io/sumeshsquare/helloapi:latest`,
+- A `Deployment` (3 replicas) running `ghcr.io/sumesh-base/helloapi:latest`,
   with readiness/liveness probes against `/health`.
 - A `ClusterIP` `Service` named `helloapi` exposing port `80` → container port `8080`.
 
