@@ -167,10 +167,17 @@ affinity: {}
 secrets:
   enabled: false
   encryptedConnectionString: ""
+  encryptedPostgresPassword: ""
 
 postgresql:
   enabled: true
   auth:
+    # If secrets.enabled is true, PostgreSQL will pull the password from the SealedSecret instead!
+    existingSecret: "ideal-service"
+    secretKeys:
+      adminPasswordKey: "postgres-password"
+      userPasswordKey: "password"
+    # Fallback default values if secrets are disabled
     postgresPassword: "postgres"
     username: "dbuser"
     password: "dbpassword"
