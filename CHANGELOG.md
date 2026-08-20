@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.0](https://github.com/sumesh-base/ideal-service-template/compare/v1.3.0...v1.4.0) (2026-08-20)
+
+
+### Features
+
+* add opentelemetry, dependabot, codeql, and sealed secrets ([56f70ec](https://github.com/sumesh-base/ideal-service-template/commit/56f70ec059cd4af1938ab97deb026cf680f4f187))
+* implement advanced enterprise features ([860431e](https://github.com/sumesh-base/ideal-service-template/commit/860431e980ff09ca324bed02d244f55fe607f2a7))
+
 ## [1.3.0](https://github.com/sumesh-base/ideal-service-template/compare/v1.2.1...v1.3.0) (2026-08-20)
 
 
