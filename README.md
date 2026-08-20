@@ -25,6 +25,14 @@ This repository implements a full enterprise-grade CI/CD pipeline and GitOps wor
 9. **Secrets Management**: Integrated **HashiCorp Vault** into the Helm chart to allow safe commitment of encrypted secrets to the repository.
 10. **Test & Security Visibility**: Test results (via Dorny Test Reporter) and Trivy vulnerability scans (via SARIF) are natively annotated and visualized directly on the PR timeline and GitHub Security tab.
 
+## Zero-Downtime Dynamic Credentials Workflow
+To eliminate the need for manual password rotation and hardcoded secrets, this repository natively implements zero-downtime dynamic database credentials using HashiCorp Vault:
+
+1. **Vault Database Engine**: Vault connects directly to the PostgreSQL instance with admin rights. Instead of a single static password, Vault dynamically creates short-lived PostgreSQL users and passwords via `CREATE ROLE ... WITH LOGIN PASSWORD ...` whenever the application needs to authenticate.
+2. **Sidecar Injection**: The `ideal-service` Helm chart uses Vault annotations (`vault.hashicorp.com/agent-inject: "true"`). This tells the cluster to inject a Vault Agent sidecar container into the API pod. The sidecar securely authenticates with Vault using the pod's native Kubernetes Service Account.
+3. **JSON File Rendering**: Upon authentication, the Vault sidecar fetches a fresh, dynamically generated database credential and renders it as a JSON connection string file directly into the pod's shared memory at `/vault/secrets/db-creds.json`.
+4. **.NET Zero-Downtime Reload**: The .NET 8 application is configured with `builder.Configuration.AddJsonFile("/vault/secrets/db-creds.json", reloadOnChange: true)`. When the database credential nears its expiration (e.g., after 1 hour), the Vault Agent automatically requests a new one and updates the JSON file. The .NET `IConfiguration` provider instantly detects the file change and dynamically updates the connection string in memory. The very next SQL query automatically uses the brand-new password **without requiring a pod restart or dropping any API traffic!**
+
 ## Developer Workflow (Commits & Versioning)
 
 This repository enforces **Conventional Commits** and strict branching rules. All versions and releases are entirely automated based on your Pull Request titles!
