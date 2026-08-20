@@ -26,7 +26,7 @@ RUN dotnet publish IdealService.csproj \
 # no shell, no package manager, no extra OS packages, and it already
 # runs as the built-in non-root "app" user - smaller attack surface
 # and image size than the regular aspnet runtime image.
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled AS final
 WORKDIR /app
 
 ENV ASPNETCORE_HTTP_PORTS=8080 \
