@@ -22,6 +22,9 @@ builder.Services.AddOpenTelemetry()
         .AddHttpClientInstrumentation()
         .AddOtlpExporter());
 
+// Add Vault configuration file if it exists (injected by Vault Agent sidecar)
+builder.Configuration.AddJsonFile("/vault/secrets/db-creds.json", optional: true, reloadOnChange: true);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -30,10 +33,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Helper to get connection string (Vault overrides Env Var)
+string GetConnectionString() 
+{
+    return app.Configuration.GetConnectionString("VaultDB") 
+           ?? Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
+           ?? string.Empty;
+}
+
 // Database Initialization
 void InitDb()
 {
-    var connString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+    var connString = GetConnectionString();
     if (string.IsNullOrEmpty(connString)) return;
 
     try
@@ -58,7 +69,9 @@ InitDb();
 
 app.MapGet("/", () => 
 {
-    var connString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+    // Getting the connection string here means we dynamically get the latest 
+    // Vault credentials on every request without restarting the pod!
+    var connString = GetConnectionString();
     int visitCount = 0;
     string dbStatus = "Disconnected";
 
@@ -76,7 +89,10 @@ app.MapGet("/", () =>
 
             using var countCmd = new NpgsqlCommand("SELECT COUNT(*) FROM access_logs", conn);
             visitCount = Convert.ToInt32(countCmd.ExecuteScalar());
-            dbStatus = "Connected (PostgreSQL Latest)";
+            
+            // Show if we are using Vault or static credentials
+            bool isVault = app.Configuration.GetConnectionString("VaultDB") != null;
+            dbStatus = isVault ? "Connected (Secured by HashiCorp Vault Dynamic Credentials!)" : "Connected (PostgreSQL Static Credentials)";
         }
         catch (Exception ex)
         {
@@ -112,7 +128,7 @@ app.MapGet("/", () =>
     <body>
         <div class="container">
             <h1>ideal-service Enterprise</h1>
-            <p class="subtitle">Version {{Environment.GetEnvironmentVariable("HELM_CHART_VERSION") ?? "1.0.0"}} &bull; Cloud-Native .NET 8</p>
+            <p class="subtitle">Version {{Environment.GetEnvironmentVariable("HELM_CHART_VERSION") ?? "1.0.0"}} &bull; Cloud-Native .NET</p>
             
             <div class="db-section">
                 <h2>🗄️ PostgreSQL Database Integration</h2>
@@ -125,7 +141,7 @@ app.MapGet("/", () =>
                 <ul>
                     <li><strong>GitOps CD:</strong> Fully managed by ArgoCD targeting specific namespaces (dev, staging, prod).</li>
                     <li><strong>Database:</strong> Bitnami PostgreSQL 15 deployed as a Helm dependency.</li>
-                    <li><strong>Secret Management:</strong> Bitnami SealedSecrets integrated into Helm for encrypted credentials.</li>
+                    <li><strong>Secret Management:</strong> HashiCorp Vault injects dynamic credentials via sidecar (zero-downtime rotation!).</li>
                     <li><strong>Security:</strong> Trivy scans Docker image & codebase; CodeQL statically analyzes C# for bugs.</li>
                     <li><strong>Observability:</strong> OpenTelemetry is actively exporting metrics and distributed traces via OTLP.</li>
                     <li><strong>Multi-Arch:</strong> Docker image built for both linux/amd64 and linux/arm64.</li>
