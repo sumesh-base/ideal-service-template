@@ -16,7 +16,7 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/", () => 
 {
-    var html = """
+    var html = $$"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -45,19 +45,19 @@ app.MapGet("/", () =>
             <div class="info-grid">
                 <div class="info-card">
                     <h3>OS Architecture</h3>
-                    <span>""" + System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString() + """</span>
+                    <span>{{System.Runtime.InteropServices.RuntimeInformation.OSArchitecture.ToString()}}</span>
                 </div>
                 <div class="info-card">
                     <h3>Framework</h3>
-                    <span>""" + System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription + """</span>
+                    <span>{{System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}}</span>
                 </div>
                 <div class="info-card">
                     <h3>Machine Name</h3>
-                    <span>""" + Environment.MachineName + """</span>
+                    <span>{{Environment.MachineName}}</span>
                 </div>
                 <div class="info-card">
                     <h3>Processors</h3>
-                    <span>""" + Environment.ProcessorCount + """ Core(s)</span>
+                    <span>{{Environment.ProcessorCount}} Core(s)</span>
                 </div>
             </div>
             <a href="/api/v1/info" class="btn">View Raw API Info</a>
