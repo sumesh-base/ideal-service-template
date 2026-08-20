@@ -22,7 +22,7 @@ This repository implements a full enterprise-grade CI/CD pipeline and GitOps wor
 6. **CodeQL SAST**: Natively scans C# source code for logical bugs and SQL injections inside Pull Requests.
 7. **Automated Dependency Updates**: Uses Dependabot to auto-update NuGet packages, Docker base images, and GitHub Actions.
 8. **Observability**: The .NET 8 API is instrumented with **OpenTelemetry** to export Metrics and Distributed Traces via OTLP.
-9. **Secrets Management**: Integrated **SealedSecrets** into the Helm chart to allow safe commitment of encrypted secrets to the repository.
+9. **Secrets Management**: Integrated **HashiCorp Vault** into the Helm chart to allow safe commitment of encrypted secrets to the repository.
 10. **Test & Security Visibility**: Test results (via Dorny Test Reporter) and Trivy vulnerability scans (via SARIF) are natively annotated and visualized directly on the PR timeline and GitHub Security tab.
 
 ## Developer Workflow (Commits & Versioning)
