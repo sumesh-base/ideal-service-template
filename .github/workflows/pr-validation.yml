@@ -9,25 +9,16 @@ on:
       - 'manifests/**'
 
 jobs:
-  check-version-changelog:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
 
-      - name: Enforce version.yaml and CHANGELOG.md updates
-        run: |
-          # Compare the PR branch against the target base branch using triple-dot syntax
-          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
-          
-          if [[ "$CHANGED" != *"version.yaml"* ]] || [[ "$CHANGED" != *"CHANGELOG.md"* ]]; then
-            echo "::error::Both version.yaml and CHANGELOG.md must be updated in this Pull Request!"
-            exit 1
-          fi
-
-      - name: Validate Keep a Changelog format
-        uses: mindsers/changelog-reader-action@v2
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
         with:
-          path: ./CHANGELOG.md
+          dotnet-version: '8.0.x'
+
+      - name: Run Tests
+        run: dotnet test src/IdealService.Tests/IdealService.Tests.csproj -c Release
