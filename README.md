@@ -8,7 +8,8 @@ containerized with a minimal multi-stage Docker build, and deployed to a local
 
 | Method | Path      | Description                                  |
 |--------|-----------|-----------------------------------------------|
-| GET    | `/hello`  | Returns `{"message":"Hello, World!"}`         |
+| GET    | `/`       | Returns a beautiful HTML system information UI |
+| GET    | `/api/v1/info` | Returns raw JSON system and deployment info |
 | GET    | `/health` | ASP.NET Core health check, returns `Healthy`  |
 
 ## Project layout
