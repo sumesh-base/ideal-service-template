@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0](https://github.com/sumesh-base/ideal-service-template/compare/v1.4.0...v1.5.0) (2026-08-20)
+
+
+### Features
+
+* output test and security results natively to PRs ([65a6106](https://github.com/sumesh-base/ideal-service-template/commit/65a6106b9b238d391f9051185ff2e8f48fbf2a67))
+* output test and security results natively to PRs ([36755aa](https://github.com/sumesh-base/ideal-service-template/commit/36755aa87339b9a26c1cc6b4eb6c3fbdc59f0f32))
+
 ## [1.4.0](https://github.com/sumesh-base/ideal-service-template/compare/v1.3.0...v1.4.0) (2026-08-20)
 
 
