@@ -85,6 +85,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Run Trivy vulnerability scanner
+        if: github.event_name != 'pull_request'
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: ghcr.io/${{ github.repository_owner }}/ideal-service:${{ env.APP_VERSION }}
