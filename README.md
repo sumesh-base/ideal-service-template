@@ -105,12 +105,21 @@ This repository follows the GitOps **App-of-Apps** pattern. The base Helm chart 
 
 To bootstrap the entire cluster locally in `kind`:
 
+### Installed Cluster Operators (PoC)
+To run the full GitOps and Secrets management workflow locally, the `kind` cluster is provisioned with the following operators:
+1. **ArgoCD**: Continuously syncs the cluster state with the `main` branch.
+2. **Sealed Secrets Controller**: Decrypts the `SealedSecret` resources into standard Kubernetes `Secret`s.
+
+### Bootstrapping the Cluster
 ```bash
 # 1. Install ArgoCD
 kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-# 2. Apply the App-of-Apps manifest
+# 2. Install Sealed Secrets Controller
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.0/controller.yaml
+
+# 3. Apply the App-of-Apps manifest
 kubectl apply -f manifests/argocd-apps.yaml
 ```
 
