@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-08-20
+### Added
+- Created `manifests/` directory for full multi-environment GitOps with ArgoCD (dev, staging, prod)
+- Set up `argocd-apps.yaml` to define environments
+
 ## [1.1.1] - 2026-08-20
 ### Fixed
 - Updated README.md to document the new UI endpoints correctly

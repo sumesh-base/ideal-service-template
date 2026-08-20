@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ideal-service-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sumesh-base/ideal-service-template.git
+    targetRevision: main
+    path: k8s/ideal-service
+    helm:
+      valueFiles:
+        - ../../manifests/dev/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dev
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ideal-service-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sumesh-base/ideal-service-template.git
+    targetRevision: main
+    path: k8s/ideal-service
+    helm:
+      valueFiles:
+        - ../../manifests/staging/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ideal-service-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/sumesh-base/ideal-service-template.git
+    targetRevision: main
+    path: k8s/ideal-service
+    helm:
+      valueFiles:
+        - ../../manifests/prod/values.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
