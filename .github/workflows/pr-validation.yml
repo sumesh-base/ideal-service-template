@@ -16,6 +16,10 @@ jobs:
       - name: Check branch name
         run: |
           BRANCH_NAME="${{ github.head_ref }}"
+          if [[ "$BRANCH_NAME" == release-please--* ]]; then
+            echo "Branch is created by release-please. Skipping Jira ticket check."
+            exit 0
+          fi
           if [[ ! "$BRANCH_NAME" =~ [A-Z]+-[0-9]+ ]]; then
             echo "::error::Branch name must contain a Jira ticket number (e.g., PROJ-123). Your branch name: $BRANCH_NAME"
             exit 1
