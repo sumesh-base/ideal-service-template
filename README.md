@@ -25,6 +25,23 @@ This repository implements a full enterprise-grade CI/CD pipeline and GitOps wor
 9. **Secrets Management**: Integrated **SealedSecrets** into the Helm chart to allow safe commitment of encrypted secrets to the repository.
 10. **Test & Security Visibility**: Test results (via Dorny Test Reporter) and Trivy vulnerability scans (via SARIF) are natively annotated and visualized directly on the PR timeline and GitHub Security tab.
 
+## Developer Workflow (Commits & Versioning)
+
+This repository enforces **Conventional Commits** and strict branching rules. All versions and releases are entirely automated based on your Pull Request titles!
+
+### Branch Naming
+All branches **must** contain a Jira ticket number (e.g., `PROJ-123`).
+Examples of valid branches:
+- `feat/PROJ-123-add-login`
+- `fix/PROJ-456-resolve-deadlock`
+- `PROJ-789-hotfix`
+
+### How Versioning Works
+When your Pull Request is merged into `main`, the bot reads the PR title to determine the semantic version bump:
+- **Minor Bump** (`1.5.0` -> `1.6.0`): Use `feat:` (e.g., `feat: new payment gateway`)
+- **Patch Bump** (`1.5.0` -> `1.5.1`): Use `fix:` (e.g., `fix: resolve crash loop`)
+- **No Bump**: Use `docs:`, `chore:`, `refactor:`, or `test:`
+
 ## Project Layout
 
 ```
