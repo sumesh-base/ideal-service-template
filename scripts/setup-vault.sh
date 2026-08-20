@@ -17,9 +17,20 @@ kubectl exec vault-0 -n vault -- sh -c '
   vault auth enable kubernetes || true
   vault write auth/kubernetes/config kubernetes_host="https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT"
   
-  # Create Policy for ideal-service
+  # Enable KV Secrets Engine (Version 2)
+  vault secrets enable -path=secret kv-v2 || true
+  
+  # Store the test KV secret in Vault
+  vault kv put secret/ideal-service/config \
+      ApiKey="super-secret-key-123" \
+      StripeToken="sk_live_abc123"
+
+  # Create Policy for ideal-service (Now includes DB and KV secrets)
   vault policy write ideal-service-policy - <<EOF
 path "database/creds/ideal-service-role" {
+  capabilities = ["read"]
+}
+path "secret/data/ideal-service/config" {
   capabilities = ["read"]
 }
 EOF

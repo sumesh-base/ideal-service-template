@@ -14,3 +14,11 @@ podAnnotations:
       }
     }
     {{- end -}}
+  vault.hashicorp.com/agent-inject-secret-api-keys.json: "secret/data/ideal-service/config"
+  vault.hashicorp.com/agent-inject-template-api-keys.json: |
+    {{- with secret "secret/data/ideal-service/config" -}}
+    {
+      "ApiKey": "{{ .Data.data.ApiKey }}",
+      "StripeToken": "{{ .Data.data.StripeToken }}"
+    }
+    {{- end -}}

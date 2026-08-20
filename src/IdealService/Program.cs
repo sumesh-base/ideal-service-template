@@ -24,6 +24,7 @@ builder.Services.AddOpenTelemetry()
 
 // Add Vault configuration file if it exists (injected by Vault Agent sidecar)
 builder.Configuration.AddJsonFile("/vault/secrets/db-creds.json", optional: true, reloadOnChange: true);
+builder.Configuration.AddJsonFile("/vault/secrets/api-keys.json", optional: true, reloadOnChange: true);
 
 var app = builder.Build();
 
@@ -154,6 +155,8 @@ app.MapGet("/", () =>
                 <div class="info-card"><h3>Pod Name</h3><span>{{Environment.MachineName}}</span></div>
                 <div class="info-card"><h3>Framework</h3><span>{{System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription}}</span></div>
             </div>
+            <p>API Key Configured: <strong>{(app.Configuration["ApiKey"] != null ? "Yes ✅" : "No ❌")}</strong></p>
+            <p>Stripe Token Configured: <strong>{(app.Configuration["StripeToken"] != null ? "Yes ✅" : "No ❌")}</strong></p>
         </div>
     </body>
     </html>
