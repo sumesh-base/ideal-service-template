@@ -19,6 +19,11 @@ This repository implements a full enterprise-grade CI/CD pipeline and GitOps wor
 3. **Multi-Architecture Builds**: Automatically cross-compiles immutable Docker images for both `linux/amd64` (Intel) and `linux/arm64` (Apple Silicon / AWS Graviton) via QEMU.
 4. **Auto-Versioning**: Integrated with **Google Release Please**. Merging conventional commits automatically bumps `version.yaml`, updates `CHANGELOG.md`, and creates GitHub Tags and Releases.
 5. **GitOps CD**: Uses an App-of-Apps pattern with **ArgoCD**. Automatically deploys distinct `dev`, `staging`, and `prod` environments isolated by namespaces.
+6. **CodeQL SAST**: Natively scans C# source code for logical bugs and SQL injections inside Pull Requests.
+7. **Automated Dependency Updates**: Uses Dependabot to auto-update NuGet packages, Docker base images, and GitHub Actions.
+8. **Observability**: The .NET 8 API is instrumented with **OpenTelemetry** to export Metrics and Distributed Traces via OTLP.
+9. **Secrets Management**: Integrated **SealedSecrets** into the Helm chart to allow safe commitment of encrypted secrets to the repository.
+10. **Test & Security Visibility**: Test results (via Dorny Test Reporter) and Trivy vulnerability scans (via SARIF) are natively annotated and visualized directly on the PR timeline and GitHub Security tab.
 
 ## Project Layout
 
