@@ -8,12 +8,12 @@ WORKDIR /src
 
 # Copy only the project file first so `dotnet restore` is cached
 # as its own layer and only reruns when dependencies change.
-COPY HelloApi.csproj .
-RUN dotnet restore HelloApi.csproj
+COPY IdealService.csproj .
+RUN dotnet restore IdealService.csproj
 
 # Now copy the rest of the source and publish.
 COPY . .
-RUN dotnet publish HelloApi.csproj \
+RUN dotnet publish IdealService.csproj \
     -c Release \
     -o /app/publish \
     --no-restore \
@@ -40,4 +40,4 @@ USER app
 
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "HelloApi.dll"]
+ENTRYPOINT ["dotnet", "IdealService.dll"]

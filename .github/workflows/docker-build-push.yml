@@ -39,7 +39,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v6
         with:
-          images: ghcr.io/${{ github.repository_owner }}/helloapi
+          images: ghcr.io/${{ github.repository_owner }}/ideal-service
           # Keep the moving `latest` tag limited to default-branch builds.
           flavor: |
             latest=false
@@ -55,7 +55,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
         with:
-          context: src/HelloApi
+          context: src/IdealService
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -68,10 +68,10 @@ jobs:
           version: 'v3.13.0'
 
       - name: Package Helm chart
-        run: helm package k8s/helloapi
+        run: helm package k8s/ideal-service
 
       - name: Push Helm chart to GHCR
         if: github.event_name != 'pull_request'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
-          helm push helloapi-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts
+          helm push ideal-service-*.tgz oci://ghcr.io/${{ github.repository_owner }}/charts

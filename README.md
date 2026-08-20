@@ -1,4 +1,4 @@
-# HelloApi
+# IdealService
 
 A minimal ASP.NET Core (.NET 8) Web API with a `hello` endpoint and a health check,
 containerized with a minimal multi-stage Docker build, and deployed to a local
@@ -15,12 +15,12 @@ containerized with a minimal multi-stage Docker build, and deployed to a local
 
 ```
 .
-├── src/HelloApi/
+├── src/IdealService/
 │   ├── Program.cs           # Minimal API with /hello and /health
-│   ├── HelloApi.csproj      # .NET 8 project file
+│   ├── IdealService.csproj      # .NET 8 project file
 │   ├── Dockerfile           # Multi-stage build, minimal chiseled runtime image
 │   ├── .dockerignore
-│   └── ...                  # appsettings, launchSettings, HelloApi.http
+│   └── ...                  # appsettings, launchSettings, IdealService.http
 └── k8s/
     └── deployment.yaml      # Deployment + Service for Kubernetes
 ```
@@ -30,7 +30,7 @@ containerized with a minimal multi-stage Docker build, and deployed to a local
 Requires the .NET 8 SDK.
 
 ```bash
-cd src/HelloApi
+cd src/IdealService
 dotnet run
 curl http://localhost:<port>/hello
 curl http://localhost:<port>/health
@@ -46,9 +46,9 @@ The `Dockerfile` uses a multi-stage build:
    built-in non-root `app` user by default. Final image size: **~121 MB**.
 
 ```bash
-cd src/HelloApi
-docker build -t ghcr.io/sumesh-base/helloapi:latest .
-docker run -d -p 8080:8080 ghcr.io/sumesh-base/helloapi:latest
+cd src/IdealService
+docker build -t ghcr.io/sumesh-base/ideal-service:latest .
+docker run -d -p 8080:8080 ghcr.io/sumesh-base/ideal-service:latest
 curl http://localhost:8080/hello
 curl http://localhost:8080/health
 ```
@@ -58,32 +58,32 @@ curl http://localhost:8080/health
 The image is published to GitHub Container Registry (GHCR):
 
 ```
-ghcr.io/sumesh-base/helloapi:latest
+ghcr.io/sumesh-base/ideal-service:latest
 ```
 
 ```bash
 docker login ghcr.io
-docker push ghcr.io/sumesh-base/helloapi:latest
+docker push ghcr.io/sumesh-base/ideal-service:latest
 ```
 
 ## Kubernetes deployment
 
 `k8s/deployment.yaml` defines:
 
-- A `Deployment` (3 replicas) running `ghcr.io/sumesh-base/helloapi:latest`,
+- A `Deployment` (3 replicas) running `ghcr.io/sumesh-base/ideal-service:latest`,
   with readiness/liveness probes against `/health`.
-- A `ClusterIP` `Service` named `helloapi` exposing port `80` → container port `8080`.
+- A `ClusterIP` `Service` named `ideal-service` exposing port `80` → container port `8080`.
 
 Apply directly with kubectl:
 
 ```bash
 kubectl apply -f k8s/deployment.yaml
-kubectl get pods -l app=helloapi
+kubectl get pods -l app=ideal-service
 ```
 
 ## GitOps with ArgoCD
 
-This repo is tracked by an ArgoCD `Application` (`helloapi`) with automated
+This repo is tracked by an ArgoCD `Application` (`ideal-service`) with automated
 sync, self-heal, and pruning enabled. Any change pushed to `k8s/deployment.yaml`
 on `main` is automatically applied to the cluster — no manual `kubectl apply`
 needed.
@@ -94,7 +94,7 @@ ArgoCD Application spec (applied separately, not stored in this repo):
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: helloapi
+  name: ideal-service
   namespace: argocd
 spec:
   project: default
@@ -118,12 +118,12 @@ spec:
 To force an immediate sync instead of waiting for ArgoCD's polling interval:
 
 ```bash
-kubectl -n argocd annotate application helloapi argocd.argoproj.io/refresh=hard --overwrite
+kubectl -n argocd annotate application ideal-service argocd.argoproj.io/refresh=hard --overwrite
 ```
 
 ## Verifying the deployment
 
 ```bash
 kubectl run curltest --image=curlimages/curl:8.10.1 --rm -i --restart=Never -- \
-  sh -c "curl -s http://helloapi/hello; echo; curl -s http://helloapi/health"
+  sh -c "curl -s http://ideal-service/hello; echo; curl -s http://ideal-service/health"
 ```
