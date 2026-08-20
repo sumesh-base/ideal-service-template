@@ -1,4 +1,4 @@
-name: Build and Push Container Image
+name: Continuous Integration
 
 on:
   push:
@@ -17,7 +17,7 @@ on:
       - 'manifests/**'
 
 jobs:
-  build-and-push:
+  build-test-publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
