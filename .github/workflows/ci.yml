@@ -136,6 +136,7 @@ jobs:
 
       - name: Package Helm chart
         run: |
+          helm dependency update k8s/ideal-service
           helm package k8s/ideal-service --version "${{ env.APP_VERSION }}" --app-version "${{ env.APP_VERSION }}"
 
       - name: Push Helm chart to GHCR
