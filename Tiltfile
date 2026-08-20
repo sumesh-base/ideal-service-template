@@ -9,4 +9,3 @@ k8s_yaml(helm('.tiltbuild/helloapi', name='helloapi'))
 
 k8s_resource('helloapi', port_forwards='8080:80', labels=['API'])
 k8s_resource('helloapi-test-connection', labels=['Tests'])
-tilt_resource('(Tiltfile)', labels=['System'])
