@@ -76,7 +76,7 @@ app.MapGet("/", () =>
 
             using var countCmd = new NpgsqlCommand("SELECT COUNT(*) FROM access_logs", conn);
             visitCount = Convert.ToInt32(countCmd.ExecuteScalar());
-            dbStatus = "Connected (PostgreSQL 15)";
+            dbStatus = "Connected (PostgreSQL Latest)";
         }
         catch (Exception ex)
         {
