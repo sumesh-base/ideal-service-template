@@ -1,3 +1,16 @@
 image:
-  tag: "1.5.0-hotfix.1"
-replicaCount: 2
+  tag: "1.5.1"
+replicaCount: 1
+
+podAnnotations:
+  vault.hashicorp.com/agent-inject: "true"
+  vault.hashicorp.com/role: "ideal-service-role"
+  vault.hashicorp.com/agent-inject-secret-db-creds.json: "database/creds/ideal-service-role"
+  vault.hashicorp.com/agent-inject-template-db-creds.json: |
+    {{- with secret "database/creds/ideal-service-role" -}}
+    {
+      "ConnectionStrings": {
+        "VaultDB": "Host=ideal-service-dev-postgresql;Database=idealdb;Username={{ .Data.username }};Password={{ .Data.password }}"
+      }
+    }
+    {{- end -}}
