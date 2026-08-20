@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2026-08-20
+### Fixed
+- Configured GitHub Actions to build Docker images for both `linux/amd64` and `linux/arm64` via QEMU
+
 ## [1.2.0] - 2026-08-20
 ### Added
 - Created `manifests/` directory for full multi-environment GitOps with ArgoCD (dev, staging, prod)
