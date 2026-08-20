@@ -24,3 +24,8 @@ jobs:
             echo "::error::Both version.yaml and CHANGELOG.md must be updated in this Pull Request!"
             exit 1
           fi
+
+      - name: Validate Keep a Changelog format
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          path: ./CHANGELOG.md
