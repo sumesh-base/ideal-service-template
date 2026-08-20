@@ -167,3 +167,14 @@ affinity: {}
 secrets:
   enabled: false
   encryptedConnectionString: ""
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "postgres"
+    username: "dbuser"
+    password: "dbpassword"
+    database: "idealdb"
+  primary:
+    persistence:
+      enabled: false
