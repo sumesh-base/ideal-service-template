@@ -111,8 +111,8 @@ app.MapGet("/", () =>
     </head>
     <body>
         <div class="container">
-            <h1>ideal-service Enterprise</h1>
-            <p class="subtitle">Version {{Environment.GetEnvironmentVariable("HELM_CHART_VERSION") ?? "1.0.0"}} &bull; Cloud-Native .NET 8</p>
+            <h1>ideal-service Enterprise (HOTFIX)</h1>
+            <p class="subtitle">Version {{Environment.GetEnvironmentVariable("HELM_CHART_VERSION") ?? "1.0.0"}} &bull; Cloud-Native .NET</p>
             
             <div class="db-section">
                 <h2>🗄️ PostgreSQL Database Integration</h2>
