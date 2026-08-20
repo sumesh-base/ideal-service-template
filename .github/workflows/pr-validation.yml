@@ -9,6 +9,19 @@ on:
       - 'manifests/**'
 
 jobs:
+  enforce-jira-branch:
+    name: Enforce Jira Ticket in Branch Name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name
+        run: |
+          BRANCH_NAME="${{ github.head_ref }}"
+          if [[ ! "$BRANCH_NAME" =~ [A-Z]+-[0-9]+ ]]; then
+            echo "::error::Branch name must contain a Jira ticket number (e.g., PROJ-123). Your branch name: $BRANCH_NAME"
+            exit 1
+          fi
+          echo "Branch name is valid!"
+
   test:
     runs-on: ubuntu-latest
     permissions:
@@ -16,7 +29,7 @@ jobs:
       checks: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v6
