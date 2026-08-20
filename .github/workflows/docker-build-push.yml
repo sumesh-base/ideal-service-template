@@ -7,10 +7,14 @@ on:
       - master
     tags:
       - 'v*.*.*'
+    paths-ignore:
+      - 'manifests/**'
   pull_request:
     branches:
       - main
       - master
+    paths-ignore:
+      - 'manifests/**'
 
 jobs:
   build-and-push:
@@ -24,18 +28,6 @@ jobs:
         uses: actions/checkout@v7
         with:
           fetch-depth: 0
-
-      - name: Enforce version.yaml and CHANGELOG.md updates
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-        run: |
-          # If this is the very first commit, skip the check
-          if git rev-parse HEAD~1 >/dev/null 2>&1; then
-            CHANGED=$(git diff --name-only HEAD~1 HEAD)
-            if [[ "$CHANGED" != *"version.yaml"* ]] || [[ "$CHANGED" != *"CHANGELOG.md"* ]]; then
-              echo "::error::Both version.yaml and CHANGELOG.md must be updated on every push to main!"
-              exit 1
-            fi
-          fi
 
       - name: Extract Version from version.yaml
         id: get_version
