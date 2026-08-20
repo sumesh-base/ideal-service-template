@@ -98,3 +98,4 @@ app.Run();
 
 // Exposed for WebApplicationFactory-based integration tests.
 public partial class Program { }
+public partial class Program { }
