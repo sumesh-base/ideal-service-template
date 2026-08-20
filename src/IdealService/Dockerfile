@@ -3,7 +3,7 @@
 ##############################
 # Stage 1: build & publish
 ##############################
-FROM mcr.microsoft.com/dotnet/sdk:8.0-noble AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-noble AS build
 WORKDIR /src
 
 # Copy only the project file first so `dotnet restore` is cached
