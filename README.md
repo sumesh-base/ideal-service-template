@@ -42,6 +42,19 @@ When your Pull Request is merged into `main`, the bot reads the PR title to dete
 - **Patch Bump** (`1.5.0` -> `1.5.1`): Use `fix:` (e.g., `fix: resolve crash loop`)
 - **No Bump**: Use `docs:`, `chore:`, `refactor:`, or `test:`
 
+### Emergency Hotfix Workflow
+If you need to patch an older version in `staging` or `prod` *without* deploying the newest features from `main`, use the strict hotfix workflow:
+1. **Checkout the stable tag:** `git checkout v1.5.0 -b PROJ-999-hotfix-1.5`
+2. **Make the fix & update version:** Fix the bug, then manually bump `version.yaml` to `1.5.0-hotfix.1`.
+3. **Tag & Push:**
+   ```bash
+   git commit -am "fix: urgent patch for production"
+   git tag v1.5.0-hotfix.1
+   git push origin PROJ-999-hotfix-1.5
+   git push origin v1.5.0-hotfix.1
+   ```
+4. **Deploy via GitOps:** Because you pushed a valid semver tag, the CI pipeline will automatically build and publish the `1.5.0-hotfix.1` Docker image. Once the CI finishes, switch back to `main` and update `manifests/prod/values.yaml` to point to `1.5.0-hotfix.1`.
+
 ## Project Layout
 
 ```
