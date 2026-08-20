@@ -1,6 +1,9 @@
 docker_build('ghcr.io/sumesh-base/helloapi', 'src/HelloApi')
 
-k8s_yaml(helm('k8s/helloapi', name='helloapi'))
+# Pull the Helm chart from GHCR OCI registry
+local('helm pull oci://ghcr.io/sumesh-base/charts/helloapi --version 0.1.0 --untar --untardir .tiltbuild')
+
+k8s_yaml(helm('.tiltbuild/helloapi', name='helloapi'))
 
 k8s_resource('helloapi', port_forwards='8080:80', labels=['API'])
 k8s_resource('helloapi-test-connection', labels=['Tests'])
