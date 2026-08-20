@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.1](https://github.com/sumesh-base/ideal-service-template/compare/v1.5.0...v1.5.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **dotnet:** upgrade project to .NET 10 to align with chiseled base image ([95c3dba](https://github.com/sumesh-base/ideal-service-template/commit/95c3dbac9f0860676c112a047147a927b2300d36))
+* upgrade project to .NET 10 ([23b5b73](https://github.com/sumesh-base/ideal-service-template/commit/23b5b73bf33c32ada79b22a6440c24de118ce2df))
+
 ## [1.5.0](https://github.com/sumesh-base/ideal-service-template/compare/v1.4.0...v1.5.0) (2026-08-20)
 
 
