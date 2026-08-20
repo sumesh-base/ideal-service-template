@@ -1,0 +1,26 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  check-version-changelog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Enforce version.yaml and CHANGELOG.md updates
+        run: |
+          # Compare the PR branch against the target base branch
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }} HEAD)
+          
+          if [[ "$CHANGED" != *"version.yaml"* ]] || [[ "$CHANGED" != *"CHANGELOG.md"* ]]; then
+            echo "::error::Both version.yaml and CHANGELOG.md must be updated in this Pull Request!"
+            exit 1
+          fi
