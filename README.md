@@ -1,8 +1,6 @@
 # IdealService
 
-A minimal ASP.NET Core (.NET 8) Web API with a `hello` endpoint and a health check,
-containerized with a minimal multi-stage Docker build, and deployed to a local
-`kind` Kubernetes cluster via ArgoCD (GitOps).
+A minimal, production-ready ASP.NET Core (.NET 8) Web API built with an enterprise-grade CI/CD and GitOps lifecycle.
 
 ## Endpoints
 
@@ -12,119 +10,80 @@ containerized with a minimal multi-stage Docker build, and deployed to a local
 | GET    | `/api/v1/info` | Returns raw JSON system and deployment info |
 | GET    | `/health` | ASP.NET Core health check, returns `Healthy`  |
 
-## Project layout
+## Enterprise Production-Ready Features
+
+This repository implements a full enterprise-grade CI/CD pipeline and GitOps workflow:
+
+1. **Automated Testing**: Runs xUnit tests on every Pull Request to ensure code quality before merging.
+2. **Container Security**: Uses Trivy to scan the built Docker images for OS and library vulnerabilities (CRITICAL/HIGH) before deploying.
+3. **Multi-Architecture Builds**: Automatically cross-compiles immutable Docker images for both `linux/amd64` (Intel) and `linux/arm64` (Apple Silicon / AWS Graviton) via QEMU.
+4. **Auto-Versioning**: Integrated with **Google Release Please**. Merging conventional commits automatically bumps `version.yaml`, updates `CHANGELOG.md`, and creates GitHub Tags and Releases.
+5. **GitOps CD**: Uses an App-of-Apps pattern with **ArgoCD**. Automatically deploys distinct `dev`, `staging`, and `prod` environments isolated by namespaces.
+
+## Project Layout
 
 ```
 .
-├── src/IdealService/
-│   ├── Program.cs           # Minimal API with /hello and /health
-│   ├── IdealService.csproj      # .NET 8 project file
-│   ├── Dockerfile           # Multi-stage build, minimal chiseled runtime image
-│   ├── .dockerignore
-│   └── ...                  # appsettings, launchSettings, IdealService.http
-└── k8s/
-    └── deployment.yaml      # Deployment + Service for Kubernetes
+├── src/
+│   ├── IdealService/             # Minimal API application
+│   └── IdealService.Tests/       # xUnit integration tests
+├── k8s/
+│   └── ideal-service/            # Helm Chart (Templates & defaults)
+├── manifests/                    # GitOps Environment Overrides
+│   ├── dev/                      # Development values.yaml
+│   ├── staging/                  # Staging values.yaml
+│   ├── prod/                     # Production values.yaml
+│   └── argocd-apps.yaml          # ArgoCD App-of-Apps definition
+├── .github/workflows/
+│   ├── ci.yml                    # Build, Test, Scan, and Publish
+│   ├── pr-validation.yml         # PR validation (Tests)
+│   └── release-please.yml        # Automated semantic versioning
+└── version.yaml                  # Single source of truth for versions
 ```
 
-## Running locally
+## Local Development
 
 Requires the .NET 8 SDK.
 
 ```bash
 cd src/IdealService
 dotnet run
-curl http://localhost:<port>/hello
-curl http://localhost:<port>/health
 ```
 
-## Docker image
-
-The `Dockerfile` uses a multi-stage build:
-
-1. **Build stage** — `mcr.microsoft.com/dotnet/sdk:8.0-noble`, restores and publishes the app.
-2. **Runtime stage** — `mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled`, Microsoft's
-   minimal "chiseled" runtime image: no shell, no package manager, runs as the
-   built-in non-root `app` user by default. Final image size: **~121 MB**.
-
+Run tests:
 ```bash
-cd src/IdealService
-docker build -t ghcr.io/sumesh-base/ideal-service:latest .
-docker run -d -p 8080:8080 ghcr.io/sumesh-base/ideal-service:latest
-curl http://localhost:8080/hello
-curl http://localhost:8080/health
+dotnet test src/IdealService.Tests/IdealService.Tests.csproj
 ```
 
-## Image registry
+## Docker Image
 
-The image is published to GitHub Container Registry (GHCR):
+The `Dockerfile` uses a multi-stage build resulting in a highly secure, non-root, chiseled container:
 
-```
-ghcr.io/sumesh-base/ideal-service:latest
-```
+1. **Build stage** — `mcr.microsoft.com/dotnet/sdk:8.0-noble`
+2. **Runtime stage** — `mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled` (Minimal attack surface, no shell, ~121 MB)
 
-```bash
-docker login ghcr.io
-docker push ghcr.io/sumesh-base/ideal-service:latest
-```
-
-## Kubernetes deployment
-
-`k8s/deployment.yaml` defines:
-
-- A `Deployment` (3 replicas) running `ghcr.io/sumesh-base/ideal-service:latest`,
-  with readiness/liveness probes against `/health`.
-- A `ClusterIP` `Service` named `ideal-service` exposing port `80` → container port `8080`.
-
-Apply directly with kubectl:
-
-```bash
-kubectl apply -f k8s/deployment.yaml
-kubectl get pods -l app=ideal-service
-```
+The CI pipeline pushes the resulting multi-arch image and packaged Helm chart to the GitHub Container Registry (GHCR).
 
 ## GitOps with ArgoCD
 
-This repo is tracked by an ArgoCD `Application` (`ideal-service`) with automated
-sync, self-heal, and pruning enabled. Any change pushed to `k8s/deployment.yaml`
-on `main` is automatically applied to the cluster — no manual `kubectl apply`
-needed.
+This repository follows the GitOps **App-of-Apps** pattern. The base Helm chart is defined in `k8s/ideal-service`, while environment-specific deployments are controlled via the `manifests/` directory.
 
-ArgoCD Application spec (applied separately, not stored in this repo):
-
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: ideal-service
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/sumesh-base/dotnetactions.git
-    targetRevision: main
-    path: k8s
-    directory:
-      include: "deployment.yaml"
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-```
-
-To force an immediate sync instead of waiting for ArgoCD's polling interval:
+To bootstrap the entire cluster locally in `kind`:
 
 ```bash
-kubectl -n argocd annotate application ideal-service argocd.argoproj.io/refresh=hard --overwrite
+# 1. Install ArgoCD
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# 2. Apply the App-of-Apps manifest
+kubectl apply -f manifests/argocd-apps.yaml
 ```
 
-## Verifying the deployment
+ArgoCD will automatically spawn the `ideal-service-dev`, `ideal-service-staging`, and `ideal-service-prod` applications and keep them synchronized with the `main` branch.
 
+To force an immediate sync across all environments:
 ```bash
-kubectl run curltest --image=curlimages/curl:8.10.1 --rm -i --restart=Never -- \
-  sh -c "curl -s http://ideal-service/hello; echo; curl -s http://ideal-service/health"
+kubectl -n argocd annotate application ideal-service-dev argocd.argoproj.io/refresh=hard --overwrite
+kubectl -n argocd annotate application ideal-service-staging argocd.argoproj.io/refresh=hard --overwrite
+kubectl -n argocd annotate application ideal-service-prod argocd.argoproj.io/refresh=hard --overwrite
 ```
