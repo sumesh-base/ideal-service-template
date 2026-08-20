@@ -11,6 +11,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      checks: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -21,4 +24,12 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Run Tests
-        run: dotnet test src/IdealService.Tests/IdealService.Tests.csproj -c Release
+        run: dotnet test src/IdealService.Tests/IdealService.Tests.csproj -c Release --logger "trx;LogFileName=test-results.trx" --results-directory ./TestResults
+
+      - name: Publish Test Results
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: PR .NET Tests
+          path: TestResults/*.trx
+          reporter: dotnet-trx
