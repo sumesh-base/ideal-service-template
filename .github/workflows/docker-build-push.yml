@@ -37,6 +37,13 @@ jobs:
             fi
           fi
 
+      - name: Extract Version from version.yaml
+        id: get_version
+        run: |
+          # Extract the version string from version.yaml
+          APP_VERSION=$(grep '^version:' version.yaml | awk '{print $2}' | tr -d '"' | tr -d "'")
+          echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
@@ -54,16 +61,13 @@ jobs:
         uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository_owner }}/ideal-service
-          # Keep the moving `latest` tag limited to default-branch builds.
           flavor: |
             latest=false
           tags: |
+            type=raw,value=${{ env.APP_VERSION }}
             type=raw,value=latest,enable={{is_default_branch}}
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}},enable=${{ !startsWith(github.ref, 'refs/tags/v0.') }}
             type=sha,format=short,prefix=sha-
 
       - name: Build and push Docker image
@@ -83,8 +87,7 @@ jobs:
 
       - name: Package Helm chart
         run: |
-          SHORT_SHA=$(git rev-parse --short HEAD)
-          helm package k8s/ideal-service --app-version "sha-${SHORT_SHA}" --version "0.1.0-sha-${SHORT_SHA}"
+          helm package k8s/ideal-service --version "${{ env.APP_VERSION }}" --app-version "${{ env.APP_VERSION }}"
 
       - name: Push Helm chart to GHCR
         if: github.event_name != 'pull_request'
