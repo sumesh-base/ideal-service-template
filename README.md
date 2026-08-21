@@ -17,7 +17,7 @@ This repository implements a full enterprise-grade CI/CD pipeline and GitOps wor
 1. **Automated Testing**: Runs xUnit tests on every Pull Request to ensure code quality before merging.
 2. **Container Security**: Uses Trivy to scan the built Docker images for OS and library vulnerabilities (CRITICAL/HIGH) before deploying.
 3. **Multi-Architecture Builds**: Automatically cross-compiles immutable Docker images for both `linux/amd64` (Intel) and `linux/arm64` (Apple Silicon / AWS Graviton) via QEMU.
-4. **Auto-Versioning**: Integrated with **Google Release Please**. Merging conventional commits automatically bumps `version.yaml`, updates `CHANGELOG.md`, and creates GitHub Tags and Releases.
+4. **Auto-Versioning**: Integrated with **Google Release Please**. Merging conventional commits automatically updates `.release-please-manifest.json`, updates `CHANGELOG.md`, and creates GitHub Tags and Releases.
 5. **GitOps CD**: Uses an App-of-Apps pattern with **ArgoCD**. Automatically deploys distinct `dev`, `staging`, and `prod` environments isolated by namespaces.
 6. **CodeQL SAST**: Natively scans C# source code for logical bugs and SQL injections inside Pull Requests.
 7. **Automated Dependency Updates**: Uses Dependabot to auto-update NuGet packages, Docker base images, and GitHub Actions.
@@ -53,7 +53,7 @@ When your Pull Request is merged into `main`, the bot reads the PR title to dete
 ### Emergency Hotfix Workflow
 If you need to patch an older version in `staging` or `prod` *without* deploying the newest features from `main`, use the strict hotfix workflow:
 1. **Checkout the stable tag:** `git checkout v1.5.0 -b PROJ-999-hotfix-1.5`
-2. **Make the fix & update version:** Fix the bug, then manually bump `version.yaml` to `1.5.0-hotfix.1`.
+2. **Make the fix & update version:** Fix the bug, then manually bump `.release-please-manifest.json` to `1.5.0-hotfix.1`.
 3. **Tag & Push:**
    ```bash
    git commit -am "fix: urgent patch for production"
@@ -81,7 +81,8 @@ If you need to patch an older version in `staging` or `prod` *without* deploying
 │   ├── ci.yml                    # Build, Test, Scan, and Publish
 │   ├── pr-validation.yml         # PR validation (Tests)
 │   └── release-please.yml        # Automated semantic versioning
-└── version.yaml                  # Single source of truth for versions
+├── .release-please-manifest.json # Single source of truth for versions
+└── release-please-config.json    # Release please configuration
 ```
 
 ## Local Development
