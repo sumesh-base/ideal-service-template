@@ -47,11 +47,11 @@ jobs:
           path: TestResults/*.trx
           reporter: dotnet-trx
 
-      - name: Extract Version from version.yaml
+      - name: Extract Version from .release-please-manifest.json
         id: get_version
         run: |
-          # Extract the version string from version.yaml
-          APP_VERSION=$(grep '^version:' version.yaml | awk '{print $2}' | tr -d '"' | tr -d "'")
+          # Extract the version string from .release-please-manifest.json
+          APP_VERSION=$(jq -r '."."' .release-please-manifest.json)
           echo "APP_VERSION=${APP_VERSION}" >> $GITHUB_ENV
 
       - name: Set up QEMU
