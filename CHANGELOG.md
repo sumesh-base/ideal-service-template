@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.7.0](https://github.com/sumesh-base/ideal-service-template/compare/v1.6.0...v1.7.0) (2026-08-21)
+
+
+### Features
+
+* enforce conventional commits in PR title and Jira tickets in PR description ([#32](https://github.com/sumesh-base/ideal-service-template/issues/32)) ([1000706](https://github.com/sumesh-base/ideal-service-template/commit/1000706e1c02d460a9e41966d174dae11fc98ddf))
+* replace SealedSecrets with HashiCorp Vault for zero-downtime dynamic credentials ([#28](https://github.com/sumesh-base/ideal-service-template/issues/28)) ([80c3089](https://github.com/sumesh-base/ideal-service-template/commit/80c3089763ad3c9513557196aae1644eb8683802))
+* setup Vault KV Secrets Engine and inject API keys into .NET app ([#31](https://github.com/sumesh-base/ideal-service-template/issues/31)) ([c5423c4](https://github.com/sumesh-base/ideal-service-template/commit/c5423c4d07f6d450b812ca8710b36f173f3c1577))
+* support encrypted PostgreSQL passwords via SealedSecrets ([4312b4b](https://github.com/sumesh-base/ideal-service-template/commit/4312b4b479868774896d2475f2f5ce599fabd73f))
+
 ## [1.6.0](https://github.com/sumesh-base/ideal-service-template/compare/v1.5.1...v1.6.0) (2026-08-20)
 
 
